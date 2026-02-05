@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-bottom: 40px;
+        }
+        .btn {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .login-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .login-btn:hover {
+            background-color: #45a049;
+        }
+        .register-btn {
+            background-color: #008CBA;
+            color: white;
+        }
+        .register-btn:hover {
+            background-color: #007bb5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Welcome</h1>
+    <button class="btn login-btn" onclick="window.location.href='login.html'">Login</button>
+    <button><a href="/auth/register">Register</a></button>
+</div>
+</body>
+</html>

@@ -6,6 +6,8 @@ if (loginForm) {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
+        console.log('Submitting login for', username);//for checking lang ng login
+
         fetch('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -15,7 +17,7 @@ if (loginForm) {
                 const txt = await res.text();
                 console.log('Login response', res.status, txt);
                 if (res.ok) {
-                    window.location.href = "/";
+                    window.location.href = "/admin.html";
                 } else {
                     alert(txt || 'Login failed');
                 }

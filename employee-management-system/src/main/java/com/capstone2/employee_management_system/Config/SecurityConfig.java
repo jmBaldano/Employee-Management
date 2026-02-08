@@ -49,8 +49,8 @@ public class SecurityConfig {
                                 "/register.html",
                                 "/home.html",
                                 "/admin.html",
-                                "/",
-                                "/api/**"
+                                "/api/**",
+                                "/"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

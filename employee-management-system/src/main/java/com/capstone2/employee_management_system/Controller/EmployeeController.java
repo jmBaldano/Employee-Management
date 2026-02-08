@@ -62,7 +62,7 @@ public class EmployeeController {
     @GetMapping("/search")
     public ResponseEntity<List<EmployeeModel>> search(
             @RequestParam(required = false) String employeeId,
-            @RequestParam(name ="employeeId", required = false ) String name
+            @RequestParam(required = false ) String name
     ) {
         if (employeeId != null && !employeeId.isEmpty()) {
             return ResponseEntity.ok(
@@ -76,7 +76,7 @@ public class EmployeeController {
             );
         }
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
 
@@ -88,5 +88,15 @@ public class EmployeeController {
     @GetMapping("/departments/all")
     public ResponseEntity<List<DepartmentModel>> getAllDepartments() {
         return ResponseEntity.ok(departmentRepository.findAll());
+    }
+
+    @GetMapping("/averageSalary")
+    public ResponseEntity<Double> getAverageSalary() {
+        return ResponseEntity.ok(employeeService.calculateAverageSalary());
+    }
+
+    @GetMapping("/averageAge")
+    public ResponseEntity<Double> getAverageAge(){
+        return ResponseEntity.ok(employeeService.calculateAverageAge());
     }
 }

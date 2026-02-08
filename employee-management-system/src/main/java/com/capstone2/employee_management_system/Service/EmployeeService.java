@@ -61,4 +61,14 @@ public class EmployeeService {
                 .toList();
     }
 
+    public Double calculateAverageSalary() {
+        Double avg = employeeRepository.getAverageSalary();
+        return avg != null ? avg : 0.0;
+    }
+
+    public Double calculateAverageAge(){
+        Double avg = employeeRepository.getAverageAge();
+        return  avg != null ? avg : 0.0;
+    }
+
 }

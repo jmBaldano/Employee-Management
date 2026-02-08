@@ -77,12 +77,17 @@ function loadEmployees() {
         url = `/api/employees/search?employeeId=${encodeURIComponent(searchID)}`;
     } else if (searchName) {
         url = `/api/employees/search?name=${encodeURIComponent(searchName)}`;
-    } else if (filterDeptId) {
+    } else if (filterDeptId !== "") {
         url = `/api/employees/department/${filterDeptId}`;
     }
     //fetch the url and converts to JSON
     fetch(url)
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) { // check for HTTP errors
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json(); // only parse JSON if status is OK
+        })
         .then(employees => {
             allEmployees = employees;
             renderTable(employees);
@@ -146,7 +151,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         name: document.getElementById('editName').value,
         salary: parseFloat(document.getElementById('editSalary').value),
         birthDate: document.getElementById('editBirthDate').value,
-        department: allDepartments.find(d => d.id === document.getElementById('editDepartment').value) || null
+        department: allDepartments.find(d => d.id == document.getElementById('editDepartment').value) || null
     };
 
     fetch(`/api/employees/${currentEditId}`, {
@@ -199,13 +204,45 @@ function resetFilters() {
     loadEmployees();
 }
 
+// calculate age from birth date then validate if the age is at least 18
+function getAge(birthDate) {
+    const today = new Date();
+    const birth = new Date(birthDate);
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
+        age--;
+    }
+
+    return age;
+}
+
+
+
+
 document.getElementById('employeeForm').addEventListener('submit', function (e) {
     e.preventDefault();
+
+    //Vakidation for age submission
+    const birthDateValue = document.getElementById('birthDate').value;
+
+    const age = getAge(birthDateValue);
+
+    if (age < 18) {
+    alert("Employee must be at least 18 years old.");
+    // resetForm();
+    return;
+}
 
     const newEmp = {
         name: document.getElementById('name').value,
         salary: parseFloat(document.getElementById('salary').value),
-        birthDate: document.getElementById('birthDate').value,
+        birthDate: birthDateValue,
         department: allDepartments.find(d => d.id == document.getElementById('department').value) || null
     };
 
@@ -228,3 +265,4 @@ document.getElementById('employeeForm').addEventListener('submit', function (e) 
             alert('Error creating employee');
         });
 });
+

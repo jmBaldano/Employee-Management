@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            border-radius: 8px;
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* Content */
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            background-color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        /* Center content */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav>
+    <h1>Statistics Dashboard</h1>
+    <div>
+        <a href="home.html">Home</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h3>Average Salary</h3>
+    <p id="avgSalary">Loading...</p>
+
+    <h3>Average Age</h3>
+    <p id="avgAge">Loading...</p>
+</div>
+
+<script src="js/avg.js"></script>
+</body>
+</html>

@@ -16,7 +16,7 @@ public class EmployeeModel {
     private Long id;
 
     private String name;
-    private double salary;
+    private Double salary;
     private LocalDate birthDate;
     private String employeeId;
 

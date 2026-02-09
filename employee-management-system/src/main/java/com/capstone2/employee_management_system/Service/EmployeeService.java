@@ -52,8 +52,27 @@ public class EmployeeService {
                 .toList();
     }
     public List<EmployeeModel> searchByEmployeeId(String employeeId) {
-        return employeeRepository.findByEmployeeId(employeeId);
+
+        if (employeeId == null || employeeId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Employee ID is required");
+        }
+
+        List<EmployeeModel> result = employeeRepository.findByEmployeeId(employeeId);
+
+        if (result.isEmpty()) {
+            throw new RuntimeException("Employee not found");
+        }
+
+        return result;
     }
+
+
+    public List<EmployeeModel> searchByAge(int age) {
+        return employeeRepository.findAll().stream()
+                .filter(e -> e.getAge() == age)
+                .toList();
+    }
+
 
     public List<EmployeeModel> filterByDepartment(Long departmentId) {
         return employeeRepository.findAll().stream()

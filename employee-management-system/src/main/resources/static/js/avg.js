@@ -1,8 +1,11 @@
+function formatSalary(amount) {
+    return `₱ ${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+}
+
 fetch('/api/employees/averageSalary')
     .then(res => res.json())
     .then(avgSalary => {
-        document.getElementById('avgSalary').innerText =
-            `₱ ${avgSalary.toFixed(2)}`;
+        document.getElementById('avgSalary').innerText = formatSalary(avgSalary);
     });
 
     fetch('/api/employees/averageAge')

@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -30,14 +33,22 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeModel> createEmployee(@RequestBody EmployeeModel employee) {
-        try {
-            EmployeeModel created = employeeService.createEmployee(employee);
-            return ResponseEntity.ok(created);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> createEmployee(@RequestBody EmployeeModel employee) {
+        LocalDate birthDate = employee.getBirthDate(); // assume it's LocalDate
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
+
+        if (age < 18) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Employee must be at least 18 years old.");
         }
+
+        EmployeeModel created = employeeService.createEmployee(employee);
+        return ResponseEntity.ok(created);
     }
+
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeModel> updateEmployee(@PathVariable Long id, @RequestBody EmployeeModel employee) {
@@ -62,21 +73,39 @@ public class EmployeeController {
     @GetMapping("/search")
     public ResponseEntity<List<EmployeeModel>> search(
             @RequestParam(required = false) String employeeId,
-            @RequestParam(required = false ) String name
+            @RequestParam(required = false ) String name,
+            @RequestParam(required = false ) Integer age
     ) {
-        if (employeeId != null && !employeeId.isEmpty()) {
-            return ResponseEntity.ok(
-                    employeeService.searchByEmployeeId(employeeId)
-            );
-        }
+        try {
 
-        if (name != null && !name.isEmpty()) {
-            return ResponseEntity.ok(
-                    employeeService.searchByName(name)
-            );
-        }
+            if (employeeId != null && !employeeId.isEmpty()) {
+                return ResponseEntity.ok(
+                        employeeService.searchByEmployeeId(employeeId)
+                );
+            }
 
-        return ResponseEntity.ok(employeeService.getAllEmployees());
+            if (name != null && !name.isEmpty()) {
+                return ResponseEntity.ok(
+                        employeeService.searchByName(name)
+                );
+            }
+
+            if (age != null) {
+                return ResponseEntity.ok(
+                        employeeService.searchByAge(age)
+                );
+            }
+
+            return ResponseEntity.ok(employeeService.getAllEmployees());
+
+        } catch (IllegalArgumentException e) {
+            // input problems
+            return ResponseEntity.badRequest().body(null);
+
+        } catch (RuntimeException e) {
+            // not found / server error
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
 

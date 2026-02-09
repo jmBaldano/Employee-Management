@@ -70,17 +70,32 @@
             max-width: 500px;
             margin: 0 auto;
         }
+        .back-button {
+            display: inline-block;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #555;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 <!-- Navbar -->
 <nav>
     <h1>Statistics Dashboard</h1>
-    <div>
-        <a href="home.html">Home</a>
-    </div>
 </nav>
-
+<div style=" margin-bottom: 30px;">
+    <a href="admin.html" class="back-button">Back</a>
+</div>
 <div class="container">
     <h3>Average Salary</h3>
     <p id="avgSalary">Loading...</p>

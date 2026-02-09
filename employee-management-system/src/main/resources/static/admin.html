@@ -21,6 +21,9 @@
         .logout-btn { background: #e74c3c; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
         .logout-btn:hover { background: #c0392b; }
 
+        .processing-btn { background-color: #555; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .processing-btn:hover { background: rgb(159, 150, 150); }
+
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
         
         .form-section { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -70,8 +73,10 @@
 <body>
     <div class="navbar">
         <h1>Employee Management System</h1>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-        <button class="logout-btn" onclick="window.location.href='avg.html'">Average Salary</button>
+        <div>
+            <button class="processing-btn" onclick="window.location.href='avg.html'">Statistics</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
     </div>
 
     <div class="container">
@@ -115,6 +120,8 @@
                     <input type="text" id="searchId" placeholder="Enter employee ID">
                     <label>Search by Employee Name</label>
                     <input type="text" id="searchName" placeholder="Enter name">
+                    <label>Search by Employee Age</label>
+                    <input type="text" id="searchAge" placeholder="Enter age">
                 </div>
                 <div class="form-group">
                     <label>Filter by Department</label>

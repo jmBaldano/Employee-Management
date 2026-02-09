@@ -48,12 +48,16 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/register.html",
                                 "/home.html",
-                                "/admin.html",
                                 "/api/**",
                                 "/"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/home.html?unauthorized=true");
+                        })
                 )
+
                 // programmatic authentication in controller, so disable default form login
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

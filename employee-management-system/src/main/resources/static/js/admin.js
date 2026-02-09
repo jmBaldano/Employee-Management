@@ -69,6 +69,7 @@ function loadEmployees() {
     const searchName = document.getElementById('searchName').value.trim();
     const searchID = document.getElementById('searchId').value.trim();
     const filterDeptId = document.getElementById('filterDept').value;
+    const searchAge = document.getElementById('searchAge').value;
 
     let url = '/api/employees'; // get all employees if no input value
 
@@ -80,6 +81,10 @@ function loadEmployees() {
     } else if (filterDeptId !== "") {
         url = `/api/employees/department/${filterDeptId}`;
     }
+    else if (searchAge) {
+        url = `/api/employees/search?age=${encodeURIComponent(searchAge)}`;
+    }
+
     //fetch the url and converts to JSON
     fetch(url)
         .then(res => {
@@ -113,7 +118,7 @@ function renderTable(employees) {
             <td>${emp.employeeId}</td>
             <td>${emp.name}</td>
             <td>${emp.age}</td>
-            <td>$${emp.salary.toFixed(2)}</td>
+            <td>₱${emp.salary.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
             <td>${emp.department ? emp.department.department : '-'}</td>
             <td>
                 <div class="action-btns">
@@ -223,12 +228,10 @@ function getAge(birthDate) {
 }
 
 
-
-
 document.getElementById('employeeForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
-    //Vakidation for age submission
+    //Validation for age submission
     const birthDateValue = document.getElementById('birthDate').value;
 
     const age = getAge(birthDateValue);
@@ -264,5 +267,23 @@ document.getElementById('employeeForm').addEventListener('submit', function (e) 
             console.error('Create error:', err);
             alert('Error creating employee');
         });
+});
+
+const today = new Date();
+
+// Calculate the latest allowed birth date for 18 years old
+const year = today.getFullYear() - 18;
+const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+const day = String(today.getDate()).padStart(2, '0');
+
+const maxDate = `${year}-${month}-${day}`;
+
+// Set the max attribute on the date input
+const birthInputs = ['birthDate', 'editBirthDate'];
+birthInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+        input.setAttribute('max', maxDate);
+    }
 });
 

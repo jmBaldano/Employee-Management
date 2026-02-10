@@ -1,4 +1,4 @@
-console.log('admin.js loaded');
+import { urls } from "./url.js";
 
 let currentEditId = null;
 let allEmployees = [];
@@ -18,7 +18,7 @@ window.addEventListener('load', () => {
 function checkAuth() {
     // Simple check: if user tries to access admin page without login, redirect
     // This is a basic client-side check; real security is server-side
-    fetch('/api/employees', { method: 'GET' })
+    fetch(urls.employees.base, { method: 'GET' })
         .then(res => {
             if (res.status === 401 || res.status === 403) {
                 alert('Please log in first');
@@ -38,7 +38,7 @@ function logout() {
 }
 
 function loadDepartments() {
-    fetch('/api/employees/departments/all')
+    fetch(urls.employees.departmentsAll)
         .then(res => res.json())
         .then(depts => {
             allDepartments = depts;
@@ -75,16 +75,17 @@ function loadEmployees(page = 0) {
     const searchName = document.getElementById('searchName').value.trim();
     const searchID = document.getElementById('searchId').value.trim();
     const filterDeptId = document.getElementById('filterDept').value;
+    const deptIdParam = filterDeptId !== "" ? Number(filterDeptId) : null;
     const searchAge = document.getElementById('searchAge').value;
 
-    let url = `/api/employees/search?page=${currentPage}&size=${pageSize}`; // pagination params
+    let url = `${urls.employees.search}?page=${currentPage}&size=${pageSize}`; // pagination params
 
     if (searchID) {
         url += `&employeeId=${encodeURIComponent(searchID)}`;
     } else if (searchName) {
         url += `&name=${encodeURIComponent(searchName)}`;
-    } else if (filterDeptId !== "") {
-        url += `&departmentId=${filterDeptId}`;
+    } else if (deptIdParam !== null) {
+        url += `&departmentId=${deptIdParam}`;
     } else if (searchAge) {
         url += `&age=${encodeURIComponent(searchAge)}`;
     }
@@ -102,7 +103,6 @@ function loadEmployees(page = 0) {
             updatePaginationControls();
         })
         .catch(err => {
-            console.error('Load employees error:', err);
             alert('Failed to load employees');
         });
 }
@@ -164,7 +164,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         department: allDepartments.find(d => d.id == document.getElementById('editDepartment').value) || null
     };
 
-    fetch(`/api/employees/${currentEditId}`, {
+    fetch(urls.employees.byId(currentEditId), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedEmp)
@@ -187,7 +187,7 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
 function deleteEmployee(id) {
     if (!confirm('Are you sure you want to delete this employee?')) return;
 
-    fetch(`/api/employees/${id}`, { method: 'DELETE' })
+    fetch(urls.employees.byId(id), { method: 'DELETE' })
         .then(res => {
             if (res.ok) {
                 alert('Employee deleted successfully');
@@ -254,7 +254,7 @@ document.getElementById('employeeForm').addEventListener('submit', function (e) 
         department: allDepartments.find(d => d.id == document.getElementById('department').value) || null
     };
 
-    fetch('/api/employees', {
+    fetch(urls.employees.base, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEmp)
@@ -283,6 +283,8 @@ const day = String(today.getDate()).padStart(2, '0');
 
 const maxDate = `${year}-${month}-${day}`;
 
+
+
 // Set the max attribute on the date input
 const birthInputs = ['birthDate', 'editBirthDate'];
 birthInputs.forEach(id => {
@@ -291,6 +293,8 @@ birthInputs.forEach(id => {
         input.setAttribute('max', maxDate);
     }
 });
+
+
 
 
 //pagination controls
@@ -317,4 +321,10 @@ function updatePaginationControls() {
     prevBtn.disabled = currentPage === 0;
     nextBtn.disabled = currentPage + 1 >= totalPages;
 }
+
+//to fix onlick methods in html, since the type of this js is module
+window.loadEmployees = loadEmployees;
+window.nextPage = nextPage;
+window.prevPage = prevPage;
+window.resetFilters = resetFilters;
 

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<EmployeeModel,Long> {
     EmployeeModel findTopByOrderByIdDesc();
-    List<EmployeeModel> findByEmployeeId(String employeeId);
+    Page<EmployeeModel> findByEmployeeId(String employeeId, Pageable pageable);
     @Query("select avg(emp.salary) from EmployeeModel emp")
     Double getAverageSalary();
 
@@ -19,6 +19,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeModel,Long> {
 
     Page<EmployeeModel> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
+    @Query("SELECT e FROM EmployeeModel e WHERE TIMESTAMPDIFF(YEAR, e.birthDate, CURRENT_DATE) = :age")
     Page<EmployeeModel> findByAge(int age, Pageable pageable);
 
     Page<EmployeeModel> findByDepartment_Id(Long departmentId, Pageable pageable);

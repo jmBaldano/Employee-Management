@@ -16,14 +16,11 @@ import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -36,6 +33,7 @@ class EmployeeServiceTest {
 
     private EmployeeModel employee;
     private DepartmentModel department;
+    private MessageService messageService;
 
     @BeforeEach
     void setUp() {
@@ -50,19 +48,24 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void shouldReturnAllEmployees() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
+    void GetAllEmployees() {
+        // Arrange
+        List<EmployeeModel> employees = List.of(employee);
+        Page<EmployeeModel> pageResult = new PageImpl<>(employees);
+        when(employeeRepository.findAll(any(Pageable.class))).thenReturn(pageResult);
 
-        when(employeeRepository.findAll(pageable)).thenReturn(page);
+        // Act
+        Page<EmployeeModel> result = employeeService.getAllEmployees(0, 5);
 
-        Page<EmployeeModel> result = employeeService.getAllEmployees(0, 10);
-
+        // Assert
+        assertNotNull(result);
         assertEquals(1, result.getContent().size());
         assertEquals("John", result.getContent().get(0).getName());
-
-        verify(employeeRepository).findAll(pageable);
+        assertEquals(30000.0, result.getContent().get(0).getSalary());
+        assertEquals(10L, result.getContent().get(0).getDepartment().getId());
+        verify(employeeRepository, times(1)).findAll(any(Pageable.class));
     }
+
 
 
     @Test
@@ -125,11 +128,15 @@ class EmployeeServiceTest {
 
     @Test
     void searchByEmployeeId() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            employeeService.searchByEmployeeId(null);
-        });
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
 
-        assertEquals("Employee ID is required", exception.getMessage());
+        when(employeeRepository.findByEmployeeId("0001", pageable)).thenReturn(page);
+
+        Page<EmployeeModel> result = employeeService.searchByEmployeeId("0001", 0, 10);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals("John", result.getContent().get(0).getName());
     }
     @Test
     void createEmployee() {
@@ -169,19 +176,24 @@ class EmployeeServiceTest {
         verify(employeeRepository).save(employee);
     }
     @Test
-    void searchByAge() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
+    void testSearchByAge() {
+        // Arrange
+        int age = 25;
+        List<EmployeeModel> employees = List.of(employee);
+        Page<EmployeeModel> pageResult = new PageImpl<>(employees);
 
-        when(employeeRepository.findByAge(25, pageable))
-                .thenReturn(page);
+        when(employeeRepository.findByAge(eq(age), any(Pageable.class))).thenReturn(pageResult);
 
-        Page<EmployeeModel> result =
-                employeeService.searchByAge(25, 0, 10);
+        // Act
+        Page<EmployeeModel> result = employeeService.searchByAge(age, 0, 5);
 
+        // Assert
+        assertNotNull(result);
         assertEquals(1, result.getContent().size());
         assertEquals("John", result.getContent().get(0).getName());
+        verify(employeeRepository, times(1)).findByAge(eq(age), any(Pageable.class));
     }
+
 
     @Test
     void filterByDepartment() {

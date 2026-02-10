@@ -130,7 +130,7 @@
                     </select>
                 </div>
                 <div style="display: flex; align-items: flex-end; gap: 10px;">
-                    <button class="btn btn-primary" onclick="loadEmployees()">Search</button>
+                    <button class="btn btn-primary" onclick="loadEmployees(0)">Search</button>
                     <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
                 </div>
             </div>
@@ -153,6 +153,13 @@
                 <tbody id="tableBody">
                 </tbody>
             </table>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevPage()">Previous</button>
+
+                <span id="pageInfo">Page 1</span>
+
+                <button class="btn btn-secondary" id="nextBtn" onclick="nextPage()">Next</button>
+            </div>
         </div>
     </div>
 

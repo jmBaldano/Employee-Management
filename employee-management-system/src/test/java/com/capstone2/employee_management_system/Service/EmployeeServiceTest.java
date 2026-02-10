@@ -9,6 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,17 +51,19 @@ class EmployeeServiceTest {
 
     @Test
     void shouldReturnAllEmployees() {
-        List<EmployeeModel> employees = List.of(employee);
-        when(employeeRepository.findAll()).thenReturn(employees);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
 
-        List<EmployeeModel> result = employeeService.getAllEmployees();
+        when(employeeRepository.findAll(pageable)).thenReturn(page);
 
-        // Assert
-        assertEquals(1, result.size());
-        assertEquals("John", result.get(0).getName());
+        Page<EmployeeModel> result = employeeService.getAllEmployees(0, 10);
 
-        verify(employeeRepository).findAll();
+        assertEquals(1, result.getContent().size());
+        assertEquals("John", result.getContent().get(0).getName());
+
+        verify(employeeRepository).findAll(pageable);
     }
+
 
     @Test
     void shouldSaveEmployee() {
@@ -104,13 +110,19 @@ class EmployeeServiceTest {
     }
     @Test
     void searchByName() {
-        when(employeeRepository.findAll()).thenReturn(List.of(employee));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
 
-        List<EmployeeModel> result = employeeService.searchByName("john");
+        when(employeeRepository.findByNameContainingIgnoreCase("john", pageable))
+                .thenReturn(page);
 
-        assertEquals(1, result.size());
-        assertEquals("John", result.get(0).getName());
+        Page<EmployeeModel> result =
+                employeeService.searchByName("john", 0, 10);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals("John", result.getContent().get(0).getName());
     }
+
     @Test
     void searchByEmployeeId() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -157,25 +169,35 @@ class EmployeeServiceTest {
         verify(employeeRepository).save(employee);
     }
     @Test
-    void searchByAge_shouldReturnEmployeeWithMatchingAge() {
-        when(employeeRepository.findAll()).thenReturn(List.of(employee));
+    void searchByAge() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
 
-        List<EmployeeModel> result = employeeService.searchByAge(25);
+        when(employeeRepository.findByAge(25, pageable))
+                .thenReturn(page);
 
-        // Assert
-        assertEquals(1, result.size());
-        assertEquals("John", result.get(0).getName());
+        Page<EmployeeModel> result =
+                employeeService.searchByAge(25, 0, 10);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals("John", result.getContent().get(0).getName());
     }
+
     @Test
     void filterByDepartment() {
 
-        when(employeeRepository.findAll()).thenReturn(List.of(employee));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<EmployeeModel> page = new PageImpl<>(List.of(employee));
 
-        List<EmployeeModel> result = employeeService.filterByDepartment(10L);
+        when(employeeRepository.findByDepartment_Id(10L, pageable))
+                .thenReturn(page);
+
+        Page<EmployeeModel> result =
+                employeeService.filterByDepartment(10L, 0, 10);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals("John", result.get(0).getName());
+        assertEquals(1, result.getContent().size());
+        assertEquals("John", result.getContent().get(0).getName());
     }
 
 }

@@ -5,6 +5,7 @@ import com.capstone2.employee_management_system.Model.EmployeeModel;
 import com.capstone2.employee_management_system.Repository.DepartmentRepository;
 import com.capstone2.employee_management_system.Service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,29 +23,42 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final DepartmentRepository departmentRepository;
 
-    @GetMapping
-    public ResponseEntity<List<EmployeeModel>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
+    public ResponseEntity<Page<EmployeeModel>> getAllEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(
+                employeeService.getAllEmployees(page, size)
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeModel> getEmployeeById(@PathVariable Long id) {
-        return ResponseEntity.ok(employeeService.getEmployeeById(id));
+        try {
+            return ResponseEntity.ok(employeeService.getEmployeeById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @PostMapping
     public ResponseEntity<?> createEmployee(@RequestBody EmployeeModel employee) {
-        LocalDate birthDate = employee.getBirthDate(); // assume it's LocalDate
-        int age = Period.between(birthDate, LocalDate.now()).getYears();
+        try {
+            LocalDate birthDate = employee.getBirthDate();
+            int age = Period.between(birthDate, LocalDate.now()).getYears();
 
-        if (age < 18) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Employee must be at least 18 years old.");
+            if (age < 18) {
+                throw new IllegalArgumentException("Employee must be at least 18 years old.");
+            }
+
+            return ResponseEntity.ok(employeeService.createEmployee(employee));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body("Failed to create employee");
         }
-
-        EmployeeModel created = employeeService.createEmployee(employee);
-        return ResponseEntity.ok(created);
     }
 
 
@@ -71,32 +85,34 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<EmployeeModel>> search(
-            @RequestParam(required = false) String employeeId,
+    public ResponseEntity<Page<EmployeeModel>> search(
             @RequestParam(required = false ) String name,
-            @RequestParam(required = false ) Integer age
+            @RequestParam(required = false ) Integer age,
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
         try {
 
-            if (employeeId != null && !employeeId.isEmpty()) {
+            if (name != null) {
                 return ResponseEntity.ok(
-                        employeeService.searchByEmployeeId(employeeId)
-                );
-            }
-
-            if (name != null && !name.isEmpty()) {
-                return ResponseEntity.ok(
-                        employeeService.searchByName(name)
+                        employeeService.searchByName(name, page, size)
                 );
             }
 
             if (age != null) {
                 return ResponseEntity.ok(
-                        employeeService.searchByAge(age)
+                        employeeService.searchByAge(age, page, size)
                 );
             }
 
-            return ResponseEntity.ok(employeeService.getAllEmployees());
+            if (departmentId != null) {
+                return ResponseEntity.ok(
+                        employeeService.filterByDepartment(departmentId, page, size)
+                );
+            }
+
+            return ResponseEntity.ok(employeeService.getAllEmployees(page, size));
 
         } catch (IllegalArgumentException e) {
             // input problems
@@ -110,13 +126,20 @@ public class EmployeeController {
 
 
     @GetMapping("/department/{deptId}")
-    public ResponseEntity<List<EmployeeModel>> filterByDepartment(@PathVariable Long deptId) {
-        return ResponseEntity.ok(employeeService.filterByDepartment(deptId));
-    }
-
-    @GetMapping("/departments/all")
-    public ResponseEntity<List<DepartmentModel>> getAllDepartments() {
-        return ResponseEntity.ok(departmentRepository.findAll());
+    public ResponseEntity<Page<EmployeeModel>> filterByDepartment(
+            @PathVariable Long deptId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        try {
+            return ResponseEntity.ok(
+                    employeeService.filterByDepartment(deptId, page, size)
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     @GetMapping("/averageSalary")

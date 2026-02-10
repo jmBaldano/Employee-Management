@@ -3,6 +3,10 @@ package com.capstone2.employee_management_system.Service;
 import com.capstone2.employee_management_system.Model.EmployeeModel;
 import com.capstone2.employee_management_system.Repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -25,8 +29,13 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public List<EmployeeModel> getAllEmployees() {
-        return employeeRepository.findAll();
+//    public List<EmployeeModel> getAllEmployees() {
+//        return employeeRepository.findAll();
+//    }
+
+    public Page<EmployeeModel> getAllEmployees(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return employeeRepository.findAll(pageable);
     }
 
     public EmployeeModel getEmployeeById(Long id) {
@@ -46,11 +55,19 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    public List<EmployeeModel> searchByName(String name) {
-        return employeeRepository.findAll().stream()
-                .filter(e -> e.getName().toLowerCase().contains(name.toLowerCase()))
-                .toList();
+//    public List<EmployeeModel> searchByName(String name) {
+//        return employeeRepository.findAll().stream()
+//                .filter(e -> e.getName().toLowerCase().contains(name.toLowerCase()))
+//                .toList();
+//    }
+
+    public Page<EmployeeModel> searchByName(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeRepository.findByNameContainingIgnoreCase(name, pageable);
     }
+
+
+
     public List<EmployeeModel> searchByEmployeeId(String employeeId) {
 
         if (employeeId == null || employeeId.trim().isEmpty()) {
@@ -67,18 +84,30 @@ public class EmployeeService {
     }
 
 
-    public List<EmployeeModel> searchByAge(int age) {
-        return employeeRepository.findAll().stream()
-                .filter(e -> e.getAge() == age)
-                .toList();
+//    public List<EmployeeModel> searchByAge(int age) {
+//        return employeeRepository.findAll().stream()
+//                .filter(e -> e.getAge() == age)
+//                .toList();
+//    }
+
+    public Page<EmployeeModel> searchByAge(int age, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeRepository.findByAge(age, pageable);
     }
 
 
-    public List<EmployeeModel> filterByDepartment(Long departmentId) {
-        return employeeRepository.findAll().stream()
-                .filter(e -> e.getDepartment() != null && e.getDepartment().getId().equals(departmentId))
-                .toList();
+
+//    public List<EmployeeModel> filterByDepartment(Long departmentId) {
+//        return employeeRepository.findAll().stream()
+//                .filter(e -> e.getDepartment() != null && e.getDepartment().getId().equals(departmentId))
+//                .toList();
+//    }
+
+    public Page<EmployeeModel> filterByDepartment(Long departmentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeRepository.findByDepartment_Id(departmentId, pageable);
     }
+
 
     public Double calculateAverageSalary() {
         Double avg = employeeRepository.getAverageSalary();

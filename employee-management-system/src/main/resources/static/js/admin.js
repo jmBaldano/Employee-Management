@@ -3,6 +3,10 @@ console.log('admin.js loaded');
 let currentEditId = null;
 let allEmployees = [];
 let allDepartments = [];
+let currentPage = 0;
+let pageSize = 5;
+let totalPages = 0;
+
 
 // Check if user is logged in on page load
 window.addEventListener('load', () => {
@@ -65,43 +69,44 @@ function populateDepartmentSelects(depts) {
     });
 }
 
-function loadEmployees() {
+function loadEmployees(page = 0) {
+    currentPage = page;
+
     const searchName = document.getElementById('searchName').value.trim();
     const searchID = document.getElementById('searchId').value.trim();
     const filterDeptId = document.getElementById('filterDept').value;
     const searchAge = document.getElementById('searchAge').value;
 
-    let url = '/api/employees'; // get all employees if no input value
+    let url = `/api/employees/search?page=${currentPage}&size=${pageSize}`; // pagination params
 
-    //look for user input
     if (searchID) {
-        url = `/api/employees/search?employeeId=${encodeURIComponent(searchID)}`;
+        url += `&employeeId=${encodeURIComponent(searchID)}`;
     } else if (searchName) {
-        url = `/api/employees/search?name=${encodeURIComponent(searchName)}`;
+        url += `&name=${encodeURIComponent(searchName)}`;
     } else if (filterDeptId !== "") {
-        url = `/api/employees/department/${filterDeptId}`;
-    }
-    else if (searchAge) {
-        url = `/api/employees/search?age=${encodeURIComponent(searchAge)}`;
+        url += `&departmentId=${filterDeptId}`;
+    } else if (searchAge) {
+        url += `&age=${encodeURIComponent(searchAge)}`;
     }
 
-    //fetch the url and converts to JSON
     fetch(url)
         .then(res => {
-            if (!res.ok) { // check for HTTP errors
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json(); // only parse JSON if status is OK
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
         })
-        .then(employees => {
-            allEmployees = employees;
-            renderTable(employees);
+        .then(data => {
+            // Expecting Spring Boot Page<EmployeeModel> object
+            allEmployees = data.content;
+            totalPages = data.totalPages;
+            renderTable(allEmployees);
+            updatePaginationControls();
         })
         .catch(err => {
             console.error('Load employees error:', err);
             alert('Failed to load employees');
         });
 }
+
 
 function renderTable(employees) {
     const tbody = document.getElementById('tableBody');
@@ -206,7 +211,7 @@ function resetFilters() {
     document.getElementById('searchName').value = '';
     document.getElementById('searchId').value ='';
     document.getElementById('filterDept').value = '';
-    loadEmployees();
+    loadEmployees(0);
 }
 
 // calculate age from birth date then validate if the age is at least 18
@@ -286,4 +291,30 @@ birthInputs.forEach(id => {
         input.setAttribute('max', maxDate);
     }
 });
+
+
+//pagination controls
+function nextPage() {
+    if (currentPage + 1 < totalPages) {
+        loadEmployees(currentPage + 1);
+    }
+}
+
+function prevPage() {
+    if (currentPage > 0) {
+        loadEmployees(currentPage - 1);
+    }
+}
+
+function updatePaginationControls() {
+    const pageInfo = document.getElementById('pageInfo');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (!pageInfo || !prevBtn || !nextBtn) return;
+
+    pageInfo.textContent = `Page ${currentPage + 1} of ${totalPages}`;
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage + 1 >= totalPages;
+}
 

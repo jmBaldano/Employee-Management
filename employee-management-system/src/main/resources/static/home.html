@@ -56,5 +56,13 @@
     <button class="btn login-btn" onclick="window.location.href='register.html'">Register</button>
 </div>
 <script src="js/home.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('unauthorized') === 'true') {
+        alert('You are not authorized to access that page!');
+        // Optionally, remove the query parameter from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+</script>
 </body>
 </html>

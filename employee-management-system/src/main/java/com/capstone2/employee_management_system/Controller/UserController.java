@@ -5,6 +5,7 @@ import com.capstone2.employee_management_system.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.capstone2.employee_management_system.Config.UrlConfig;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/auth")
+@RequestMapping("${auth.base}")
 public class UserController {
 
     private final UserService userService;
+    private final UrlConfig urlConfig;
 
     //register endpoint
     @PostMapping("/register")

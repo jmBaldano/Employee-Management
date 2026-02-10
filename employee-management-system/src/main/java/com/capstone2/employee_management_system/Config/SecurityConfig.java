@@ -51,23 +51,30 @@ public class SecurityConfig {
                                 "/api/**",
                                 "/"
                         ).permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(401);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                            // Redirect to home.html with a query parameter for alert
+                            response.sendRedirect("/home.html?unauthorized=true");
                         })
                 )
 
-                // programmatic authentication in controller, so disable default form login
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // Endpoint to trigger logout
+                        .logoutSuccessUrl("/login.html?logout=true") // Redirect after logout
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
+
+
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                // Ensure security context is stored in session
                 .securityContext(securityContext -> securityContext
                         .requireExplicitSave(false)
                 );
 
         return http.build();
     }
+
 }

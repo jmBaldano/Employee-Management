@@ -31,11 +31,19 @@ function checkAuth() {
         });
 }
 
-function logout() {
-    // Simple logout: clear and redirect
-    alert('Logged out');
-    window.location.href = '/login.html';
-}
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try {
+        // Send POST request to Spring Security logout endpoint
+        await fetch('/logout', { method: 'POST', credentials: 'same-origin' });
+
+        // Redirect to login with alert
+        alert('Logged out successfully');
+        window.location.href = '/login.html';
+    } catch (err) {
+        console.error('Logout failed', err);
+        alert('Logout failed');
+    }
+});
 
 function loadDepartments() {
     fetch(urls.employees.departmentsAll)
@@ -327,4 +335,9 @@ window.loadEmployees = loadEmployees;
 window.nextPage = nextPage;
 window.prevPage = prevPage;
 window.resetFilters = resetFilters;
+window.editEmployee = editEmployee;
+window.deleteEmployee = deleteEmployee;
+window.closeEditModal = closeEditModal;
+window.resetForm = resetForm;
+
 

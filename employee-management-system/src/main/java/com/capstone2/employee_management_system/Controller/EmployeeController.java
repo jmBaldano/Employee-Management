@@ -6,6 +6,7 @@ import com.capstone2.employee_management_system.Repository.DepartmentRepository;
 import com.capstone2.employee_management_system.Service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import com.capstone2.employee_management_system.Config.UrlConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/employees")
+@RequestMapping("${employees.base}")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final DepartmentRepository departmentRepository;
+    private final UrlConfig urlConfig;
 
     @GetMapping
     public ResponseEntity<Page<EmployeeModel>> getAllEmployees(

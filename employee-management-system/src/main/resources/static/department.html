@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Management</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: #fff;
+            color: #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar h1 { font-size: 24px; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #2980b9; }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: #fff;
+        }
+        .btn-secondary:hover { background: #7f8c8d; }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .btn-danger:hover { background: #c0392b; }
+
+        /* Layout */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #34495e;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f0f0f0;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btns button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h1>Department Management</h1>
+    <button class="btn btn-secondary" onclick="window.location.href='admin.html'">
+        Back to Employees
+    </button>
+</div>
+
+<div class="container">
+
+    <!-- Add / Edit Department -->
+    <div class="card">
+        <h2>Add / Edit Department</h2>
+
+        <input type="hidden" id="deptId">
+
+        <div class="form-group">
+            <label>Department Name</label>
+            <input type="text" id="deptName" placeholder="Enter department name">
+        </div>
+
+        <div>
+            <button class="btn btn-primary" onclick="saveDepartment()">Save</button>
+            <button class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Department Table -->
+    <div class="card">
+        <h2>Departments</h2>
+
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 80px;">ID</th>
+                <th>Department</th>
+                <th style="width: 180px;">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="deptTableBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="js/department.js"></script>
+</body>
+</html>

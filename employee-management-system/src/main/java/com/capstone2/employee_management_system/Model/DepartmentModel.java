@@ -2,7 +2,9 @@ package com.capstone2.employee_management_system.Model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name="department")
@@ -14,4 +16,9 @@ public class DepartmentModel {
     private Long id;
 
     private String department;
+    public DepartmentModel() {}
+
+    public DepartmentModel(String department) {
+        this.department = department;
+    }
 }

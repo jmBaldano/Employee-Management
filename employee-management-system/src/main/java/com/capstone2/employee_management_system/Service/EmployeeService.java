@@ -41,7 +41,7 @@ public class EmployeeService {
         // next number (1 if DB empty)
         long nextId = (lastEmployee != null) ? lastEmployee.getId() + 1 : 1;
 
-        // format as 4 digits
+        //create and format employeeId as 4 digits
         employee.setEmployeeId(String.format("%04d", nextId));
 
         // save to DB
